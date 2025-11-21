@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Plus, Edit2, Trash2, MapPin, DollarSign, Users, Briefcase } from "lucide-react"
 import JobPostingForm from "@/components/forms/job-posting-form"
 
@@ -47,47 +49,53 @@ export default function JobPostingsScreen() {
     },
   ])
 
-  const [showForm, setShowForm] = useState(false)
+  const [open, setOpen] = useState(false)
 
   const deleteJob = (id: string) => {
     setJobs(jobs.filter((job) => job.id !== id))
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+        return "default"
       case "closed":
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+        return "secondary"
       case "draft":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+        return "outline"
       default:
-        return ""
+        return "default"
     }
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-center mb-8">
+    <div>
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Job Postings</h1>
-          <p className="text-muted-foreground mt-2">Manage and track open positions</p>
+          <h2 className="text-2xl font-bold text-foreground">Job Postings</h2>
+          <p className="text-muted-foreground mt-1">Manage and track open positions</p>
         </div>
-        <Button onClick={() => setShowForm(!showForm)} className="gap-2">
-          <Plus className="w-4 h-4" />
-          New Job Posting
-        </Button>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button className="gap-2">
+              <Plus className="w-4 h-4" />
+              New Job Posting
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create New Job Posting</DialogTitle>
+            </DialogHeader>
+            <JobPostingForm
+              onClose={() => setOpen(false)}
+              onAdd={(job) => {
+                setJobs([...jobs, { ...job, id: Math.random().toString() }])
+                setOpen(false)
+              }}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
-
-      {showForm && (
-        <JobPostingForm
-          onClose={() => setShowForm(false)}
-          onAdd={(job) => {
-            setJobs([...jobs, { ...job, id: Math.random().toString() }])
-            setShowForm(false)
-          }}
-        />
-      )}
 
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
         {jobs.map((job) => (
@@ -97,9 +105,9 @@ export default function JobPostingsScreen() {
                 <h3 className="text-xl font-semibold text-foreground">{job.title}</h3>
                 <p className="text-sm text-muted-foreground">{job.department}</p>
               </div>
-              <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(job.status)}`}>
+              <Badge variant={getStatusVariant(job.status) as any}>
                 {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-              </span>
+              </Badge>
             </div>
 
             <div className="space-y-2 mb-4">
