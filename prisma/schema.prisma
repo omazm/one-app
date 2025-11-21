@@ -1,0 +1,179 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ============================================
+// Job Posting Management
+// ============================================
+
+model JobPosting {
+  id          String   @id @default(cuid())
+  title       String
+  department  String
+  location    String
+  salary      String
+  description String?
+  applicants  Int      @default(0)
+  status      JobStatus @default(DRAFT)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  applications Application[]
+
+  @@index([status])
+  @@index([department])
+  @@map("job_postings")
+}
+
+enum JobStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+// ============================================
+// Candidate & Application Management
+// ============================================
+
+model Candidate {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  applications Application[]
+  interviews   Interview[]
+  offers       Offer[]
+
+  @@index([email])
+  @@map("candidates")
+}
+
+model Application {
+  id          String            @id @default(cuid())
+  candidateId String
+  jobId       String
+  status      ApplicationStatus @default(NEW)
+  appliedDate DateTime          @default(now())
+  notes       String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // Relations
+  candidate Candidate   @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  job       JobPosting  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+  @@index([jobId])
+  @@index([status])
+  @@map("applications")
+}
+
+enum ApplicationStatus {
+  NEW
+  REVIEWING
+  SHORTLISTED
+  REJECTED
+}
+
+// ============================================
+// Pipeline & Candidate Progression
+// ============================================
+
+model Pipeline {
+  id          String        @id @default(cuid())
+  candidateId String
+  position    String
+  stage       PipelineStage @default(APPLIED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([candidateId])
+  @@index([stage])
+  @@map("pipelines")
+}
+
+enum PipelineStage {
+  APPLIED
+  SCREENING
+  INTERVIEW
+  OFFER
+  HIRED
+}
+
+// ============================================
+// Interview Management
+// ============================================
+
+model Interview {
+  id            String          @id @default(cuid())
+  candidateId   String
+  position      String
+  date          DateTime
+  time          String
+  interviewer   String
+  location      String
+  status        InterviewStatus @default(SCHEDULED)
+  notes         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  // Relations
+  candidate Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+  @@index([date])
+  @@index([status])
+  @@map("interviews")
+}
+
+enum InterviewStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// Offer Management
+// ============================================
+
+model Offer {
+  id            String      @id @default(cuid())
+  candidateId   String
+  position      String
+  salary        String
+  startDate     DateTime
+  status        OfferStatus @default(DRAFT)
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  candidate Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+  @@index([status])
+  @@map("offers")
+}
+
+enum OfferStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+}
