@@ -1,114 +1,119 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import { useActionState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { createJobPostingAction, type FormState } from "@/app/jobs/postings/actions"
+import { toast } from "sonner"
 
 interface JobPostingFormProps {
   onClose: () => void
-  onAdd: (job: any) => void
+  onSuccess?: () => void
 }
 
-export default function JobPostingForm({ onClose, onAdd }: JobPostingFormProps) {
-  const [formData, setFormData] = useState({
-    title: "",
-    department: "",
-    location: "",
-    salary: "",
-    description: "",
-    status: "draft" as "active" | "closed" | "draft",
-  })
+const initialState: FormState = {
+  success: false,
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onAdd({
-      ...formData,
-      applicants: 0,
-    })
-  }
+export default function JobPostingForm({ onClose, onSuccess }: JobPostingFormProps) {
+  const [state, formAction, isPending] = useActionState(createJobPostingAction, initialState)
+
+  useEffect(() => {
+    if (state.success) {
+      toast.success("Job posting created successfully")
+      onSuccess?.()
+      onClose()
+    } else if (state.error) {
+      toast.error(state.error)
+    }
+  }, [state, onSuccess, onClose])
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="title">Job Title</Label>
-          <Input
-            id="title"
-            placeholder="e.g., Senior Frontend Developer"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="department">Department</Label>
-          <Input
-            id="department"
-            placeholder="e.g., Engineering"
-            value={formData.department}
-            onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-            required
-          />
-        </div>
-      </div>
+    <form action={formAction} className="space-y-4">
+      <FieldGroup>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field>
+            <FieldLabel htmlFor="title">Job Title</FieldLabel>
+            <Input
+              id="title"
+              name="title"
+              placeholder="e.g., Senior Frontend Developer"
+              required
+            />
+          </Field>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="location">Location</Label>
-          <Input
-            id="location"
-            placeholder="e.g., San Francisco, CA"
-            value={formData.location}
-            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-            required
-          />
+          <Field>
+            <FieldLabel htmlFor="department">Department</FieldLabel>
+            <Input
+              id="department"
+              name="department"
+              placeholder="e.g., Engineering"
+              required
+            />
+          </Field>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="salary">Salary Range</Label>
-          <Input
-            id="salary"
-            placeholder="e.g., $150K - $200K"
-            value={formData.salary}
-            onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-            required
-          />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field>
+            <FieldLabel htmlFor="location">Location</FieldLabel>
+            <Input
+              id="location"
+              name="location"
+              placeholder="e.g., San Francisco, CA"
+              required
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="salary">Salary Range</FieldLabel>
+            <Input
+              id="salary"
+              name="salary"
+              placeholder="e.g., $150K - $200K"
+              required
+            />
+          </Field>
         </div>
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="status">Status</Label>
-        <Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
-          <SelectTrigger id="status">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="draft">Draft</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="closed">Closed</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        <Field>
+          <FieldLabel htmlFor="status">Status</FieldLabel>
+          <Select name="status" defaultValue="draft" required>
+            <SelectTrigger id="status">
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
+            </SelectContent>
+          </Select>
+        </Field>
 
-      <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
-        <textarea
-          id="description"
-          placeholder="Job description and requirements..."
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring min-h-[100px]"
-          rows={4}
-        />
-      </div>
+        <Field>
+          <FieldLabel htmlFor="description">Description</FieldLabel>
+          <textarea
+            id="description"
+            name="description"
+            placeholder="Job description and requirements..."
+            className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring min-h-[100px]"
+            rows={4}
+          />
+        </Field>
+      </FieldGroup>
 
       <div className="flex gap-2 pt-4">
-        <Button type="submit" className="flex-1">
-          Create Posting
+        <Button type="submit" className="flex-1" disabled={isPending}>
+          {isPending ? "Creating..." : "Create Posting"}
         </Button>
-        <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onClose}
+          className="flex-1"
+          disabled={isPending}
+        >
           Cancel
         </Button>
       </div>
