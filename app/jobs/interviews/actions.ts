@@ -22,6 +22,7 @@ export async function createInterviewAction(
       time: formData.get("time") as string,
       interviewer: formData.get("interviewer") as string,
       location: formData.get("location") as string,
+      status: formData.get("status") as string,
       notes: formData.get("notes") as string,
     }
 
@@ -35,7 +36,7 @@ export async function createInterviewAction(
         time: validatedData.time,
         interviewer: validatedData.interviewer,
         location: validatedData.location,
-        status: "SCHEDULED",
+        status: validatedData.status,
         notes: validatedData.notes || null,
       },
     })
@@ -76,6 +77,7 @@ export async function updateInterviewAction(
       time: formData.get("time") as string,
       interviewer: formData.get("interviewer") as string,
       location: formData.get("location") as string,
+      status: formData.get("status") as string,
       notes: formData.get("notes") as string,
     }
 
@@ -90,6 +92,7 @@ export async function updateInterviewAction(
         time: validatedData.time,
         interviewer: validatedData.interviewer,
         location: validatedData.location,
+        status: validatedData.status,
         notes: validatedData.notes || null,
       },
     })

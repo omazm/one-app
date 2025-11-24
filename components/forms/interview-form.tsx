@@ -50,22 +50,42 @@ export default function InterviewForm({ onClose, onSuccess, interview, candidate
   const {
     register,
     control,
+    reset,
     formState: { errors },
     handleSubmit: handleFormSubmit,
   } = useForm<InterviewFormData>({
     resolver: zodResolver(interviewSchema),
-    defaultValues: interview
-      ? {
-          candidateId: interview.candidateId,
-          position: interview.position,
-          date: interview.date,
-          time: interview.time,
-          interviewer: interview.interviewer,
-          location: interview.location,
-          notes: interview.notes || "",
-        }
-      : undefined,
+    defaultValues: {
+      status: "SCHEDULED",
+    },
   })
+
+  // Reset form when interview changes (for editing)
+  useEffect(() => {
+    if (interview) {
+      reset({
+        candidateId: interview.candidateId,
+        position: interview.position,
+        date: interview.date,
+        time: interview.time,
+        interviewer: interview.interviewer,
+        location: interview.location,
+        status: interview.status as "SCHEDULED" | "COMPLETED" | "CANCELLED",
+        notes: interview.notes || "",
+      })
+    } else {
+      reset({
+        candidateId: undefined as any,
+        position: "",
+        date: "",
+        time: "",
+        interviewer: "",
+        location: "",
+        status: "SCHEDULED",
+        notes: "",
+      })
+    }
+  }, [interview, reset])
 
   useEffect(() => {
     if (hasAction && state.success) {
@@ -103,8 +123,9 @@ export default function InterviewForm({ onClose, onSuccess, interview, candidate
               control={control}
               render={({ field }) => (
                 <Select
+                  key={interview?.id || 'new'}
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                   name="candidateId"
                 >
                   <SelectTrigger>
@@ -189,6 +210,33 @@ export default function InterviewForm({ onClose, onSuccess, interview, candidate
             )}
           </Field>
         </div>
+
+        <Field>
+          <FieldLabel htmlFor="status">Status</FieldLabel>
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+                name="status"
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SCHEDULED">Scheduled</SelectItem>
+                  <SelectItem value="COMPLETED">Completed</SelectItem>
+                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {errors.status && (
+            <FieldError>{errors.status.message}</FieldError>
+          )}
+        </Field>
 
         <Field>
           <FieldLabel htmlFor="notes">Notes (Optional)</FieldLabel>
