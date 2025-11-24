@@ -54,6 +54,7 @@ model Candidate {
   applications Application[]
   interviews   Interview[]
   offers       Offer[]
+  pipelines    Pipeline[]
 
   @@index([email])
   @@map("candidates")
@@ -97,6 +98,9 @@ model Pipeline {
   stage       PipelineStage @default(APPLIED)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+
+  // Relations
+  candidate Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
 
   @@index([candidateId])
   @@index([stage])

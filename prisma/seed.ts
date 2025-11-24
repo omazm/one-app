@@ -58,7 +58,67 @@ async function main() {
     },
   })
 
-  console.log('Created candidates:', { candidate1, candidate2, candidate3, candidate4 })
+  const candidate5 = await prisma.candidate.upsert({
+    where: { email: 'david.kim@email.com' },
+    update: {},
+    create: {
+      name: 'David Kim',
+      email: 'david.kim@email.com',
+      phone: '(555) 567-8901',
+    },
+  })
+
+  const candidate6 = await prisma.candidate.upsert({
+    where: { email: 'lisa.nguyen@email.com' },
+    update: {},
+    create: {
+      name: 'Lisa Nguyen',
+      email: 'lisa.nguyen@email.com',
+      phone: '(555) 678-9012',
+    },
+  })
+
+  const candidate7 = await prisma.candidate.upsert({
+    where: { email: 'james.smith@email.com' },
+    update: {},
+    create: {
+      name: 'James Smith',
+      email: 'james.smith@email.com',
+      phone: '(555) 789-0123',
+    },
+  })
+
+  const candidate8 = await prisma.candidate.upsert({
+    where: { email: 'priya.patel@email.com' },
+    update: {},
+    create: {
+      name: 'Priya Patel',
+      email: 'priya.patel@email.com',
+      phone: '(555) 890-1234',
+    },
+  })
+
+  const candidate9 = await prisma.candidate.upsert({
+    where: { email: 'carlos.martinez@email.com' },
+    update: {},
+    create: {
+      name: 'Carlos Martinez',
+      email: 'carlos.martinez@email.com',
+      phone: '(555) 901-2345',
+    },
+  })
+
+  const candidate10 = await prisma.candidate.upsert({
+    where: { email: 'rachel.brown@email.com' },
+    update: {},
+    create: {
+      name: 'Rachel Brown',
+      email: 'rachel.brown@email.com',
+      phone: '(555) 012-3456',
+    },
+  })
+
+  console.log('Created 10 candidates')
 
   // Get existing job postings
   const jobs = await prisma.jobPosting.findMany()
@@ -148,6 +208,91 @@ async function main() {
   })
 
   console.log('Created applications:', { application1, application2, application3, application4 })
+
+  // Create pipeline entries
+  const pipeline1 = await prisma.pipeline.create({
+    data: {
+      candidateId: candidate1.id,
+      position: 'Senior Frontend Developer',
+      stage: 'APPLIED',
+    },
+  })
+
+  const pipeline2 = await prisma.pipeline.create({
+    data: {
+      candidateId: candidate2.id,
+      position: 'Senior Frontend Developer',
+      stage: 'SCREENING',
+    },
+  })
+
+  const pipeline3 = await prisma.pipeline.create({
+    data: {
+      candidateId: candidate3.id,
+      position: 'Product Manager',
+      stage: 'INTERVIEW',
+    },
+  })
+
+  const pipeline4 = await prisma.pipeline.create({
+    data: {
+      candidateId: candidate5.id,
+      position: 'UX Designer',
+      stage: 'INTERVIEW',
+    },
+  })
+
+  const pipeline5 = await prisma.pipeline.create({
+    data: {
+      candidateId: candidate6.id,
+      position: 'Senior Frontend Developer',
+      stage: 'OFFER',
+    },
+  })
+
+  console.log('Created pipelines:', { pipeline1, pipeline2, pipeline3, pipeline4, pipeline5 })
+
+  // Create interview entries
+  const interview1 = await prisma.interview.create({
+    data: {
+      candidateId: candidate3.id,
+      position: 'Product Manager',
+      date: new Date('2024-01-22'),
+      time: '10:00 AM',
+      interviewer: 'John Smith',
+      location: 'Conference Room A',
+      status: 'SCHEDULED',
+      notes: 'First round technical interview',
+    },
+  })
+
+  const interview2 = await prisma.interview.create({
+    data: {
+      candidateId: candidate5.id,
+      position: 'UX Designer',
+      date: new Date('2024-01-22'),
+      time: '2:00 PM',
+      interviewer: 'Sarah Davis',
+      location: 'Zoom',
+      status: 'SCHEDULED',
+      notes: 'Portfolio review session',
+    },
+  })
+
+  const interview3 = await prisma.interview.create({
+    data: {
+      candidateId: candidate2.id,
+      position: 'Senior Frontend Developer',
+      date: new Date('2024-01-20'),
+      time: '11:00 AM',
+      interviewer: 'Alex Turner',
+      location: 'Conference Room B',
+      status: 'COMPLETED',
+      notes: 'Excellent technical skills demonstrated',
+    },
+  })
+
+  console.log('Created interviews:', { interview1, interview2, interview3 })
 
   console.log('Seed completed successfully!')
 }

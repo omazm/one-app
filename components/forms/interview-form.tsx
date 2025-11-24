@@ -1,121 +1,224 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
-import { Card } from "@/components/ui/card"
+import { useActionState, useEffect } from "react"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { X } from "lucide-react"
+import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { interviewSchema, type InterviewFormData } from "@/lib/validations/interview"
+import { toast } from "sonner"
+
+interface Interview {
+  id: string
+  candidateId: string
+  candidateName?: string
+  position: string
+  date: string
+  time: string
+  interviewer: string
+  location: string
+  notes?: string | null
+  status: string
+}
+
+interface Candidate {
+  id: string
+  name: string
+  email: string
+}
 
 interface InterviewFormProps {
   onClose: () => void
-  onAdd: (interview: any) => void
+  onSuccess?: () => void
+  interview?: Interview
+  candidates: Candidate[]
+  action?: (prevState: any, formData: FormData) => Promise<any>
+  onAdd?: (interview: any) => void
 }
 
-export default function InterviewForm({ onClose, onAdd }: InterviewFormProps) {
-  const [formData, setFormData] = useState({
-    candidateName: "",
-    position: "",
-    date: "",
-    time: "",
-    interviewer: "",
-    location: "",
+const initialState = {
+  success: false,
+}
+
+export default function InterviewForm({ onClose, onSuccess, interview, candidates, action, onAdd }: InterviewFormProps) {
+  const isEditing = !!interview
+  const hasAction = !!action
+  const [state, formAction, isPending] = useActionState(action || (async () => initialState), initialState)
+
+  const {
+    register,
+    control,
+    formState: { errors },
+    handleSubmit: handleFormSubmit,
+  } = useForm<InterviewFormData>({
+    resolver: zodResolver(interviewSchema),
+    defaultValues: interview
+      ? {
+          candidateId: interview.candidateId,
+          position: interview.position,
+          date: interview.date,
+          time: interview.time,
+          interviewer: interview.interviewer,
+          location: interview.location,
+          notes: interview.notes || "",
+        }
+      : undefined,
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onAdd({
-      ...formData,
-      status: "scheduled",
-    })
+  useEffect(() => {
+    if (hasAction && state.success) {
+      toast.success(isEditing ? "Interview updated successfully" : "Interview scheduled successfully")
+      onSuccess?.()
+      onClose()
+    } else if (hasAction && state.error) {
+      toast.error(state.error)
+    }
+  }, [state, onSuccess, onClose, isEditing, hasAction])
+
+  const handleLegacySubmit = (e: React.FormEvent) => {
+    if (!hasAction && onAdd) {
+      e.preventDefault()
+      handleFormSubmit((data) => {
+        onAdd({
+          ...data,
+          status: "scheduled",
+        })
+        onClose()
+      })(e)
+    }
   }
 
   return (
-    <Card className="p-6 mb-6 border-2 border-primary/20">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-foreground">Schedule Interview</h2>
-        <Button variant="ghost" size="icon" onClick={onClose}>
-          <X className="w-4 h-4" />
+    <form action={hasAction ? formAction : undefined} onSubmit={handleLegacySubmit} className="space-y-4">
+      {isEditing && <input type="hidden" name="id" value={interview.id} />}
+      
+      <FieldGroup>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field>
+            <FieldLabel htmlFor="candidateId">Candidate</FieldLabel>
+            <Controller
+              name="candidateId"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  name="candidateId"
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a candidate" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {candidates.map((candidate) => (
+                      <SelectItem key={candidate.id} value={candidate.id}>
+                        {candidate.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.candidateId && (
+              <FieldError>{errors.candidateId.message}</FieldError>
+            )}
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="position">Position</FieldLabel>
+            <Input
+              id="position"
+              placeholder="Position title"
+              {...register("position")}
+            />
+            {errors.position && (
+              <FieldError>{errors.position.message}</FieldError>
+            )}
+          </Field>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field>
+            <FieldLabel htmlFor="date">Date</FieldLabel>
+            <Input
+              id="date"
+              type="date"
+              {...register("date")}
+            />
+            {errors.date && (
+              <FieldError>{errors.date.message}</FieldError>
+            )}
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="time">Time</FieldLabel>
+            <Input
+              id="time"
+              type="time"
+              {...register("time")}
+            />
+            {errors.time && (
+              <FieldError>{errors.time.message}</FieldError>
+            )}
+          </Field>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field>
+            <FieldLabel htmlFor="interviewer">Interviewer</FieldLabel>
+            <Input
+              id="interviewer"
+              placeholder="Interviewer name"
+              {...register("interviewer")}
+            />
+            {errors.interviewer && (
+              <FieldError>{errors.interviewer.message}</FieldError>
+            )}
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="location">Location</FieldLabel>
+            <Input
+              id="location"
+              placeholder="e.g., Conference Room A or Zoom"
+              {...register("location")}
+            />
+            {errors.location && (
+              <FieldError>{errors.location.message}</FieldError>
+            )}
+          </Field>
+        </div>
+
+        <Field>
+          <FieldLabel htmlFor="notes">Notes (Optional)</FieldLabel>
+          <textarea
+            id="notes"
+            placeholder="Additional notes about the interview..."
+            className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring min-h-20"
+            {...register("notes")}
+            rows={3}
+          />
+          {errors.notes && (
+            <FieldError>{errors.notes.message}</FieldError>
+          )}
+        </Field>
+      </FieldGroup>
+
+      <div className="flex gap-2 pt-4">
+        <Button type="submit" className="flex-1" disabled={isPending}>
+          {isPending ? (isEditing ? "Updating..." : "Scheduling...") : (isEditing ? "Update Interview" : "Schedule Interview")}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onClose}
+          className="flex-1"
+          disabled={isPending}
+        >
+          Cancel
         </Button>
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Candidate Name</label>
-            <Input
-              type="text"
-              placeholder="Full name"
-              value={formData.candidateName}
-              onChange={(e) => setFormData({ ...formData, candidateName: e.target.value })}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Position</label>
-            <Input
-              type="text"
-              placeholder="Position title"
-              value={formData.position}
-              onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Date</label>
-            <Input
-              type="date"
-              value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Time</label>
-            <Input
-              type="time"
-              value={formData.time}
-              onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Interviewer</label>
-            <Input
-              type="text"
-              placeholder="Interviewer name"
-              value={formData.interviewer}
-              onChange={(e) => setFormData({ ...formData, interviewer: e.target.value })}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Location</label>
-            <Input
-              type="text"
-              placeholder="e.g., Conference Room A or Zoom"
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-2 pt-4">
-          <Button type="submit" className="flex-1">
-            Schedule Interview
-          </Button>
-          <Button type="button" variant="outline" onClick={onClose} className="flex-1 bg-transparent">
-            Cancel
-          </Button>
-        </div>
-      </form>
-    </Card>
+    </form>
   )
 }
