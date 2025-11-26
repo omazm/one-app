@@ -9,11 +9,11 @@ export default function JobsLayout({ children }: { children: React.ReactNode }) 
   const pathname = usePathname()
 
   const tabs = [
-    { value: "postings", label: "Job Postings", shortLabel: "Jobs", icon: Briefcase, path: "/jobs/postings" },
-    { value: "applications", label: "Applications", shortLabel: "Apps", icon: FileText, path: "/jobs/applications" },
-    { value: "pipeline", label: "Pipeline", shortLabel: "Pipeline", icon: Users, path: "/jobs/pipeline" },
-    { value: "interviews", label: "Interviews", shortLabel: "Interviews", icon: Calendar, path: "/jobs/interviews" },
-    { value: "offers", label: "Offers", shortLabel: "Offers", icon: FileCheck, path: "/jobs/offers" },
+    { value: "postings", label: "Job Postings", shortLabel: "Jobs", icon: Briefcase, path: "/recruitment/postings" },
+    { value: "applications", label: "Applications", shortLabel: "Apps", icon: FileText, path: "/recruitment/applications" },
+    { value: "pipeline", label: "Pipeline", shortLabel: "Pipeline", icon: Users, path: "/recruitment/pipeline" },
+    { value: "interviews", label: "Interviews", shortLabel: "Interviews", icon: Calendar, path: "/recruitment/interviews" },
+    { value: "offers", label: "Offers", shortLabel: "Offers", icon: FileCheck, path: "/recruitment/offers" },
   ]
 
   const activeTab = tabs.find((tab) => pathname?.includes(tab.value))?.value || "postings"

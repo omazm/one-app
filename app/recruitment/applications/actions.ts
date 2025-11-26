@@ -44,7 +44,7 @@ export async function updateApplicationStatus(id: string, status: string) {
       },
     })
 
-    revalidatePath("/jobs/applications")
+    revalidatePath("/recruitment/applications")
 
     return {
       success: true,
@@ -65,7 +65,7 @@ export async function deleteApplication(id: string) {
       where: { id },
     })
 
-    revalidatePath("/jobs/applications")
+    revalidatePath("/recruitment/applications")
 
     return {
       success: true,

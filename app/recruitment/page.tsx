@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
 
 export default function JobsPage() {
-  redirect("/jobs/postings")
+  redirect("/recruitment/postings")
 }

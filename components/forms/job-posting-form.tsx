@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { createJobPostingAction, updateJobPostingAction, type FormState } from "@/app/jobs/postings/actions"
+import { createJobPostingAction, updateJobPostingAction, type FormState } from "@/app/recruitment/postings/actions"
 import { toast } from "sonner"
 
 interface JobPosting {

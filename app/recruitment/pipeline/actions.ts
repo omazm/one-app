@@ -43,7 +43,7 @@ export async function updatePipelineStage(id: string, stage: string) {
       },
     })
 
-    revalidatePath("/jobs/pipeline")
+    revalidatePath("/recruitment/pipeline")
 
     return {
       success: true,
@@ -64,7 +64,7 @@ export async function deletePipeline(id: string) {
       where: { id },
     })
 
-    revalidatePath("/jobs/pipeline")
+    revalidatePath("/recruitment/pipeline")
 
     return {
       success: true,

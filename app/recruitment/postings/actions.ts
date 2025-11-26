@@ -42,7 +42,7 @@ export async function createJobPostingAction(
     })
 
     // Revalidate the jobs page
-    revalidatePath("/jobs/postings")
+    revalidatePath("/recruitment/postings")
 
     return {
       success: true,
@@ -82,7 +82,7 @@ export async function createJobPosting(data: any) {
     })
 
     // Revalidate the jobs page
-    revalidatePath("/jobs/postings")
+    revalidatePath("/recruitment/postings")
 
     return {
       success: true,
@@ -160,7 +160,7 @@ export async function updateJobPostingAction(
     })
 
     // Revalidate the jobs page
-    revalidatePath("/jobs/postings")
+    revalidatePath("/recruitment/postings")
 
     return {
       success: true,
@@ -187,7 +187,7 @@ export async function deleteJobPosting(id: string) {
       where: { id },
     })
 
-    revalidatePath("/jobs/postings")
+    revalidatePath("/recruitment/postings")
 
     return {
       success: true,

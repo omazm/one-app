@@ -37,7 +37,7 @@ export async function createOfferAction(
       },
     })
 
-    revalidatePath("/jobs/offers")
+    revalidatePath("/recruitment/offers")
 
     return {
       success: true,
@@ -88,7 +88,7 @@ export async function updateOfferAction(
       },
     })
 
-    revalidatePath("/jobs/offers")
+    revalidatePath("/recruitment/offers")
 
     return {
       success: true,
@@ -134,7 +134,7 @@ export async function deleteOffer(id: string) {
       where: { id },
     })
 
-    revalidatePath("/jobs/offers")
+    revalidatePath("/recruitment/offers")
 
     return {
       success: true,
@@ -157,7 +157,7 @@ export async function updateOfferStatus(id: string, status: string) {
       },
     })
 
-    revalidatePath("/jobs/offers")
+    revalidatePath("/recruitment/offers")
 
     return {
       success: true,

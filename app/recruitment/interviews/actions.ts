@@ -41,7 +41,7 @@ export async function createInterviewAction(
       },
     })
 
-    revalidatePath("/jobs/interviews")
+    revalidatePath("/recruitment/interviews")
 
     return {
       success: true,
@@ -97,7 +97,7 @@ export async function updateInterviewAction(
       },
     })
 
-    revalidatePath("/jobs/interviews")
+    revalidatePath("/recruitment/interviews")
 
     return {
       success: true,
@@ -143,7 +143,7 @@ export async function deleteInterview(id: string) {
       where: { id },
     })
 
-    revalidatePath("/jobs/interviews")
+    revalidatePath("/recruitment/interviews")
 
     return {
       success: true,
@@ -166,7 +166,7 @@ export async function updateInterviewStatus(id: string, status: string) {
       },
     })
 
-    revalidatePath("/jobs/interviews")
+    revalidatePath("/recruitment/interviews")
 
     return {
       success: true,
