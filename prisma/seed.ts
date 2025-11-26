@@ -294,6 +294,42 @@ async function main() {
 
   console.log('Created interviews:', { interview1, interview2, interview3 })
 
+  // Create offers
+  const offer1 = await prisma.offer.create({
+    data: {
+      candidateId: candidate6.id,
+      position: 'Senior Frontend Developer',
+      salary: '$180,000',
+      startDate: new Date('2024-02-15'),
+      status: 'SENT',
+      notes: 'Competitive package with equity options',
+    },
+  })
+
+  const offer2 = await prisma.offer.create({
+    data: {
+      candidateId: candidate7.id,
+      position: 'Backend Engineer',
+      salary: '$160,000',
+      startDate: new Date('2024-03-01'),
+      status: 'DRAFT',
+      notes: 'Pending final approval',
+    },
+  })
+
+  const offer3 = await prisma.offer.create({
+    data: {
+      candidateId: candidate8.id,
+      position: 'DevOps Engineer',
+      salary: '$170,000',
+      startDate: new Date('2024-02-01'),
+      status: 'ACCEPTED',
+      notes: 'Candidate accepted offer',
+    },
+  })
+
+  console.log('Created offers:', { offer1, offer2, offer3 })
+
   console.log('Seed completed successfully!')
 }
 
