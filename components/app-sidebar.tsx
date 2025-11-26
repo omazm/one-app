@@ -31,29 +31,9 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Job Postings",
+    title: "Recruitment",
     href: "/recruitment/postings",
     icon: Briefcase,
-  },
-  {
-    title: "Applications",
-    href: "/recruitment/applications",
-    icon: FileText,
-  },
-  {
-    title: "Pipeline",
-    href: "/recruitment/pipeline",
-    icon: Users,
-  },
-  {
-    title: "Interviews",
-    href: "/recruitment/interviews",
-    icon: Calendar,
-  },
-  {
-    title: "Offers",
-    href: "/recruitment/offers",
-    icon: Gift,
   },
 ]
 
