@@ -1,6 +1,6 @@
-import { PrismaClient } from './generated/prisma';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import mariadb from 'mariadb';
+import { PrismaClient } from './generated/prisma/client';
+
 
 const poolConfig = {
   host: 'localhost',
