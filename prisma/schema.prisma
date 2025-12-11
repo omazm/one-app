@@ -176,3 +176,31 @@ enum OfferStatus {
   ACCEPTED
   REJECTED
 }
+
+// ============================================
+// Training Management
+// ============================================
+
+model Training {
+  id              String          @id @default(cuid())
+  trainerName     String
+  title           String
+  date            DateTime
+  description     String
+  tags            String[]
+  trainerPhotoUrl String?
+  status          TrainingStatus  @default(PENDING)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([status])
+  @@index([date])
+  @@map("trainings")
+}
+
+enum TrainingStatus {
+  PENDING
+  COMPLETED
+  POSTPONED
+  CANCELLED
+}
