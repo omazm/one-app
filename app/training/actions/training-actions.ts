@@ -1,7 +1,5 @@
 "use server"
 
-
-
 import type { TrainingStatus } from "../types"
 import { revalidatePath } from "next/cache"
 import { db } from "@/lib/db"
@@ -12,21 +10,12 @@ export async function createTraining(formData: FormData) {
   const date = formData.get("date") as string
   const description = formData.get("description") as string
   const tagsString = formData.get("tags") as string
-  const photo = formData.get("photo") as File | null
+  const trainerPhotoUrl = formData.get("trainerPhotoUrl") as string | null
 
   const tags = tagsString
     .split(",")
     .map((tag) => tag.trim())
     .filter(Boolean)
-
-  let trainerPhotoUrl: string | null = null
-
-  if (photo && photo.size > 0) {
-    const blob = await put(`trainers/${Date.now()}-${photo.name}`, photo, {
-      access: "public",
-    })
-    trainerPhotoUrl = blob.url
-  }
 
   await db.training.create({
     data: {
@@ -35,12 +24,12 @@ export async function createTraining(formData: FormData) {
       date: new Date(date),
       description,
       tags,
-      trainerPhotoUrl,
+      trainerPhotoUrl: trainerPhotoUrl || null,
       status: "PENDING",
     },
   })
 
-  revalidatePath("/")
+  revalidatePath("/training")
   return { success: true }
 }
 

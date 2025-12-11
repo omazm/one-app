@@ -9,6 +9,7 @@ import {
   Calendar,
   Gift,
   LayoutDashboard,
+  GraduationCap,
 } from "lucide-react"
 
 import {
@@ -34,6 +35,11 @@ const navItems = [
     title: "Recruitment",
     href: "/recruitment/postings",
     icon: Briefcase,
+  },
+  {
+    title: "Training",
+    href: "/training",
+    icon: GraduationCap,
   },
 ]
 
