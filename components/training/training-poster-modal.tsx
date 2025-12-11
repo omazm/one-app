@@ -3,7 +3,7 @@
 import type React from "react"
 
 import type { Training, TrainingStatus } from "@/app/training/types"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { format } from "date-fns"
 import { Calendar, User, Clock, CheckCircle, PauseCircle, XCircle } from "lucide-react"
 
@@ -44,6 +44,7 @@ export function TrainingPosterModal({ training, open, onOpenChange }: TrainingPo
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl p-0 overflow-hidden border-0 bg-transparent">
+        <DialogTitle className="sr-only">{training.title} - Training Details</DialogTitle>
         <div className="relative bg-card rounded-2xl overflow-hidden shadow-2xl">
           {/* Decorative gradient header */}
           <div className={`h-32 bg-gradient-to-br ${status.color} relative overflow-hidden`}>
