@@ -3,16 +3,5 @@
   "devCommand": "npm run dev",
   "installCommand": "npm ci",
   "framework": "nextjs",
-  "outputDirectory": ".next",
-  "env": {
-    "DATABASE_URL": {
-      "description": "PostgreSQL connection string with pgBouncer pooling (port 6543)",
-      "required": true
-    },
-    "DIRECT_URL": {
-      "description": "Direct PostgreSQL connection string without pooling (port 5432) for migrations",
-      "required": false
-    }
-  }
-  
+  "outputDirectory": ".next"
 }
