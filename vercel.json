@@ -13,6 +13,6 @@
       "description": "Direct PostgreSQL connection string without pooling (port 5432) for migrations",
       "required": false
     }
-  },
-  "buildOutputDirectory": ".next"
+  }
+  
 }
