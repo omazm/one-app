@@ -1,18 +1,6 @@
-import { PrismaClient } from '@/lib/generated/prisma/client';
-import { PrismaMariaDb } from '@prisma/adapter-mariadb'
-import mariadb from 'mariadb'
+import { PrismaClient } from "@prisma/client";
 
-const poolConfig = {
-  host: 'localhost',
-  port: 3306,
-  user: 'root',
-  password: 'root',
-  database: 'one_app',
-  connectionLimit: 5,
-};
-
-const adapter = new PrismaMariaDb(poolConfig);
-const prisma = new PrismaClient({ adapter })
+const prisma = new PrismaClient()
 
 async function main() {
   console.log('Starting seed...')
