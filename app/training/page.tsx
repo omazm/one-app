@@ -1,7 +1,9 @@
 import { TrainingPageContent } from "@/components/training/training-page-content"
 import { getTrainings } from "./actions/training-actions"
+import { requireAuth } from "@/lib/auth-helpers"
 
 export default async function Home() {
+  await requireAuth()
   const trainings = await getTrainings()
 
   return (

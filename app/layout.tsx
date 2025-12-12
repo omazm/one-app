@@ -7,6 +7,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/mode-toggle";
+import { UserNav } from "@/components/user-nav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,7 +46,8 @@ export default function RootLayout({
               <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mr-2 h-4" />
-                <div className="flex flex-1 items-center justify-end">
+                <div className="flex flex-1 items-center justify-end gap-2">
+                  <UserNav />
                   <ModeToggle />
                 </div>
               </header>
