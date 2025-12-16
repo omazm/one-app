@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
+import { organization } from "better-auth/plugins"
 import { db } from "@/lib/db"
 
 export const auth = betterAuth({
@@ -24,6 +25,13 @@ export const auth = betterAuth({
       maxAge: 5 * 60, // 5 minutes
     },
   },
+  plugins: [
+    organization({
+      allowUserToCreateOrganization: true,
+      organizationLimit: 10,
+      creatorRole: "owner",
+    }),
+  ],
 })
 
 export type Session = typeof auth.$Infer.Session.session

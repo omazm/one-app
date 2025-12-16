@@ -10,6 +10,7 @@ import {
   Gift,
   LayoutDashboard,
   GraduationCap,
+  Building2,
 } from "lucide-react"
 
 import {
@@ -40,6 +41,11 @@ const navItems = [
     title: "Training",
     href: "/training",
     icon: GraduationCap,
+  },
+  {
+    title: "Organizations",
+    href: "/users/organizations",
+    icon: Building2,
   },
 ]
 

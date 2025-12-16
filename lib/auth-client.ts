@@ -1,4 +1,5 @@
 import { createAuthClient } from "better-auth/react"
+import { organizationClient } from "better-auth/client/plugins"
 
 // Use the current origin in browser, or env variable for SSR, or localhost for development
 const getBaseURL = () => {
@@ -16,6 +17,7 @@ const getBaseURL = () => {
 
 export const authClient = createAuthClient({
   baseURL: getBaseURL(),
+  plugins: [organizationClient()],
 })
 
 export const { signIn, signUp, signOut, useSession } = authClient
