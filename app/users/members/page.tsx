@@ -1,5 +1,6 @@
 import { getOrganizations, getActiveOrganization } from "../actions"
 import { InviteMemberDialog } from "@/components/forms/invite-member-form"
+import { AddMemberDialog } from "@/components/forms/add-member-form"
 import { MemberList } from "./member-list"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { OrganizationSelector } from "./organization-selector"
@@ -16,6 +17,8 @@ export default async function MembersPage() {
     ...member,
     createdAt: member.createdAt.toISOString(),
   }))
+  
+  const existingMemberIds = members.map((m) => m.userId)
 
   if (organizations.length === 0) {
     return (
@@ -38,7 +41,16 @@ export default async function MembersPage() {
         <div className="flex-1 max-w-xs">
           <OrganizationSelector organizations={organizations} activeOrgId={activeOrg?.id} />
         </div>
-        {activeOrg && <InviteMemberDialog organizationId={activeOrg.id} organizationName={activeOrg.name} />}
+        {activeOrg && (
+          <div className="flex gap-2">
+            <AddMemberDialog 
+              organizationId={activeOrg.id} 
+              organizationName={activeOrg.name}
+              existingMemberIds={existingMemberIds}
+            />
+            <InviteMemberDialog organizationId={activeOrg.id} organizationName={activeOrg.name} />
+          </div>
+        )}
       </div>
 
       {activeOrg ? (

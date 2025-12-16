@@ -171,6 +171,68 @@ export async function inviteMember(data: { organizationId: string; email: string
   }
 }
 
+export async function addExistingUser(data: { organizationId: string; userId: string; role: string }) {
+  try {
+    const session = await getSession()
+    if (!session?.user) {
+      return { success: false, error: "Unauthorized" }
+    }
+
+    // Check if user is already a member
+    const existingMember = await (db as any).member.findFirst({
+      where: {
+        organizationId: data.organizationId,
+        userId: data.userId,
+      },
+    })
+
+    if (existingMember) {
+      return { success: false, error: "User is already a member of this organization" }
+    }
+
+    // Add user as member
+    await (db as any).member.create({
+      data: {
+        organizationId: data.organizationId,
+        userId: data.userId,
+        role: data.role,
+      },
+    })
+
+    revalidatePath("/users/members")
+    return { success: true }
+  } catch (error: any) {
+    console.error("Failed to add member:", error)
+    return { success: false, error: error.message || "Failed to add member" }
+  }
+}
+
+export async function getAllUsers() {
+  try {
+    const session = await getSession()
+    if (!session?.user) {
+      return { success: false, error: "Unauthorized", data: [] }
+    }
+
+    const users = await db.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    })
+
+    return { success: true, data: users }
+  } catch (error: any) {
+    console.error("Failed to fetch users:", error)
+    return { success: false, error: error.message || "Failed to fetch users", data: [] }
+  }
+}
+
 export async function removeMember(data: { organizationId: string; userId: string }) {
   try {
     const session = await getSession()
