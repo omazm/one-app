@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { writeFile, mkdir } from "fs/promises"
-import { join } from "path"
-import { existsSync } from "fs"
+import { supabase } from "@/lib/supabase"
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,24 +13,31 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // Create upload directory if it doesn't exist
-    const uploadDir = join(process.cwd(), "public", "uploads", "trainers")
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true })
-    }
-
     // Generate unique filename
     const timestamp = Date.now()
     const filename = `${timestamp}-${file.name.replace(/\s+/g, "-")}`
-    const filepath = join(uploadDir, filename)
+    const filepath = `trainers/${filename}`
 
-    // Write file
-    await writeFile(filepath, buffer)
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from("trainer-images")
+      .upload(filepath, buffer, {
+        contentType: file.type,
+        cacheControl: "3600",
+        upsert: false,
+      })
 
-    // Return the public URL path
-    const publicUrl = `/uploads/trainers/${filename}`
+    if (error) {
+      console.error("Supabase upload error:", error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
 
-    return NextResponse.json({ url: publicUrl, success: true })
+    // Get public URL
+    const { data: publicUrlData } = supabase.storage
+      .from("trainer-images")
+      .getPublicUrl(filepath)
+
+    return NextResponse.json({ url: publicUrlData.publicUrl, success: true })
   } catch (error) {
     console.error("Upload error:", error)
     return NextResponse.json({ error: "Upload failed" }, { status: 500 })

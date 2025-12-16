@@ -1,28 +1,38 @@
 "use server"
 
-import { readdir } from "fs/promises"
-import { join } from "path"
-import { existsSync } from "fs"
+import { supabase } from "@/lib/supabase"
 
 export async function getTrainerImages() {
   try {
-    const uploadDir = join(process.cwd(), "public", "uploads", "trainers")
-    
-    // Create directory if it doesn't exist
-    if (!existsSync(uploadDir)) {
+    // List all files in the trainers folder
+    const { data, error } = await supabase.storage
+      .from("trainer-images")
+      .list("trainers", {
+        limit: 100,
+        offset: 0,
+        sortBy: { column: "created_at", order: "desc" },
+      })
+
+    if (error) {
+      console.error("Error listing trainer images:", error)
       return []
     }
 
-    const files = await readdir(uploadDir)
-    
-    // Filter for image files and return public URLs
-    const imageFiles = files
-      .filter((file) => /\.(jpg|jpeg|png|gif|webp)$/i.test(file))
-      .map((file) => `/uploads/trainers/${file}`)
-      .sort()
-      .reverse() // Most recent first
+    if (!data || data.length === 0) {
+      return []
+    }
 
-    return imageFiles
+    // Get public URLs for all images
+    const imageUrls = data
+      .filter((file) => /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name))
+      .map((file) => {
+        const { data: urlData } = supabase.storage
+          .from("trainer-images")
+          .getPublicUrl(`trainers/${file.name}`)
+        return urlData.publicUrl
+      })
+
+    return imageUrls
   } catch (error) {
     console.error("Error reading trainer images:", error)
     return []
